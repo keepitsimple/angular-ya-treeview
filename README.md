@@ -1,6 +1,6 @@
 # ya.treeview [![Build Status](https://travis-ci.org/ca77y/angular-ya-treeview.png)](https://travis-ci.org/ca77y/angular-ya-treeview)
 
-> Yet Another Treeview for AngularJS
+> Yet Another Treeview for AngularJS 
 
 ## Getting started
 
@@ -42,7 +42,7 @@ Include `ya.treeview` in your angular app's dependencies. In case you are using 
 
 Template
 ```
-<div ya-treeview ya-id="myTree" ya-model="model" ya-options="options">
+<div ya-treeview ya-id="myTree" ya-model="model" ya-options="options" ya-context="context" >
     <span>{{ node.$model.label }}</span>
 </div>
 ```
@@ -68,7 +68,57 @@ $http.get('data.json')
     });
 ```
 
-Some use cases like async children loading, multiselect, node preselection are
+## Multiselect usage example
+Template
+```
+<div ya-treeview  ya-id="myTree" ya-model="categories" ya-options="options" ya-context="context" >
+<i class="glyphicon" ng-class="(context.selectedNodes.indexOf(node) === -1) ? 'glyphicon-unchecked' : 'glyphicon-check'"></i> {{ node.$model.title }}</div>
+```
+
+Controller
+```
+$scope.context= {
+    selectedNodes: []
+};
+
+$scope.options = {
+    childrenKey: 'childrens',
+    onSelect: function ($event, node, context) {
+        var idx = context.selectedNodes.indexOf(node);
+        if (idx === -1) {
+            context.selectedNodes.push(node);
+        } else {
+            context.selectedNodes.splice(idx, 1);
+        }
+    }
+};
+
+$http.get('data.json')
+    .success(function (data) {
+        $scope.categories = data;
+    });
+```
+
+children.tpl.html
+```
+<ul data-ng-hide="node.collapsed">
+    <li class="node" data-ng-repeat="node in node.$children">
+        <div data-ng-show="node.$hasChildren" >
+            <a ng-show="node.collapsed" class="btn btn-link pull-left" ng-click="expand($event, node)"><i
+                    class="glyphicon glyphicon-expand"></i></a>
+            <a ng-hide="node.collapsed" class="btn btn-link pull-left" ng-click="collapse($event, node)"><i
+                    class="glyphicon glyphicon-collapse-down"></i></a>
+        </div>
+        <div class="node-content" ng-click="selectNode($event, node)"
+             data-ng-dblclick="dblClick($event, node)">
+                <a class="btn" ya-transclude></a>
+             </div>
+        <div ya-node class="ya-node"></div>
+    </li>
+</ul>
+```
+
+Additional info (some use cases like async children loading, multiselect, node preselection) are
 described [here](http://ca77y.github.io/2014/02/09/yet-another-angular-treeview-use-cases/).
 
 ## Virtual model
