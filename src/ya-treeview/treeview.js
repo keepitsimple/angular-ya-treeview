@@ -117,6 +117,9 @@ angular.module('ya.treeview', [])
         };
 
         $scope.dblClick = function ($event, node) {
+            if(node.$hasChildren){
+                $scope.toggle($event, node);
+            }            
             options.onDblClick($event, node, $scope.context);
         };
 
@@ -144,9 +147,9 @@ angular.module('ya.treeview', [])
             }
         });
 
-        $scope.$watch('context.selectedNode', function(node) {
+/*        $scope.$watch('context.selectedNode', function(node) {
             $scope.selectNode({}, node);
-        });
+        });*/
     })
     .directive('yaTreeview', function () {
         return {
